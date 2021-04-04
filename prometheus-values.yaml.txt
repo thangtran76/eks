@@ -210,7 +210,7 @@ alertmanager:
     ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
     ##   GKE, AWS & OpenStack)
     ##
-    # storageClass: "-"
+    storageClass: "prometheus"
 
     ## alertmanager data Persistent Volume Binding Mode
     ## If defined, volumeBindingMode: <volumeBindingMode>
@@ -920,13 +920,15 @@ server:
     ## List of IP addresses at which the Prometheus server service is available
     ## Ref: https://kubernetes.io/docs/user-guide/services/#external-ips
     ##
-    externalIPs: []
+    externalIPs: [3.8.206.167]
 
     loadBalancerIP: ""
     loadBalancerSourceRanges: []
     servicePort: 80
-    sessionAffinity: None
-    type: ClusterIP
+	nodePort: 30900
+	type: NodePort
+    # sessionAffinity: None
+    # type: ClusterIP
 
     ## Enable gRPC port on service to allow auto discovery with thanos-querier
     gRPC:

@@ -1,7 +1,7 @@
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
-  name: prometheus
+  name: gp2
   namespace: prometheus
 provisioner: kubernetes.io/aws-ebs
 parameters:

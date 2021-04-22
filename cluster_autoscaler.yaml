@@ -145,7 +145,7 @@ spec:
             - --stderrthreshold=info
             - --cloud-provider=aws
             - --skip-nodes-with-local-storage=false
-            - --nodes=2:8:eks-76bc7763-9a59-71fa-52dc-5b23a9940f03
+            - --nodes=2:4:eks-3abc7bd8-932c-4f4f-e36d-7fa6fff946f6
           env:
             - name: AWS_REGION
               value: us-east-1

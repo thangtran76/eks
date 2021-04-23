@@ -7,7 +7,7 @@ metadata:
   name: cluster-autoscaler
   namespace: kube-system
 ---
-apiVersion: rbac.authorization.k8s.io/v1
+apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRole
 metadata:
   name: cluster-autoscaler
@@ -58,7 +58,7 @@ rules:
     verbs: ['get', 'list', 'watch', 'patch']
 
 ---
-apiVersion: rbac.authorization.k8s.io/v1
+apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: Role
 metadata:
   name: cluster-autoscaler
@@ -76,7 +76,7 @@ rules:
     verbs: ['delete', 'get', 'update']
 
 ---
-apiVersion: rbac.authorization.k8s.io/v1
+apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRoleBinding
 metadata:
   name: cluster-autoscaler
@@ -93,7 +93,7 @@ subjects:
     namespace: kube-system
 
 ---
-apiVersion: rbac.authorization.k8s.io/v1
+apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: RoleBinding
 metadata:
   name: cluster-autoscaler
@@ -145,7 +145,7 @@ spec:
             - --stderrthreshold=info
             - --cloud-provider=aws
             - --skip-nodes-with-local-storage=false
-            - --nodes=1:4:eks-3ebc7f51-c192-e9fd-a480-7103da40ace7
+            - --nodes=1:4:eks-9abc7f6f-4d75-d164-1d6c-9ba601a28c87
           env:
             - name: AWS_REGION
               value: us-east-1

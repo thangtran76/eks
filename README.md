@@ -92,7 +92,7 @@ sudo yum install -y git
 ### 1. Provision an EKS Cluster
 Provision an EKS cluster with three worker nodes in us-east-1:
 
-_eksctl create cluster --name dev --version 1.19 --region us-east-1 --nodegroup-name standard-workers --node-type t3.micro --nodes 3 --nodes-min 1 --nodes-max 4 --managed
+*eksctl create cluster --name dev --version 1.19 --region us-east-1 --nodegroup-name standard-workers --node-type t3.micro --nodes 3 --nodes-min 1 --nodes-max 4 --managed*
 
 It will take 10–15 minutes since it's provisioning the control plane and worker nodes, attaching the worker nodes to the control plane, and creating the VPC, security group, and Auto Scaling group.
 
@@ -100,10 +100,10 @@ In the CLI, check the cluster:
 eksctl get cluster
 
 ### 2. Enable it to connect to our cluster:
-_aws eks update-kubeconfig --name dev --region us-east-1
+*aws eks update-kubeconfig --name dev --region us-east-1*
 
 ### 3. Enable CloudWatch logging for cluster "dev" in "us-east-1":
-_eksctl utils update-cluster-logging --enable-types=all --region=us-east-1 --cluster=dev --approve
+*eksctl utils update-cluster-logging --enable-types=all --region=us-east-1 --cluster=dev --approve*
 
 ### 4. Update Autoscaling Group
 Modify the Min/Max Sizes of the Autoscaling Group
@@ -123,7 +123,7 @@ Access the application using the load balancer, replacing <LOAD_BALANCER_EXTERNA
 
 ### 6. Deploy the Cluster Autoscaler
 
-_kubectl apply -f cluster_autoscaler.yaml
+*kubectl apply -f cluster_autoscaler.yaml*
 
 Check the cluster autoscaler logs.
 kubectl logs -f deployment/cluster-autoscaler -n kube-system
@@ -138,7 +138,7 @@ List the contents of the nginx.yaml file.
 cat nginx.yaml
 Deploy the nginx deployment.
 
-_kubectl apply -f nginx.yaml
+*kubectl apply -f nginx.yaml*
 
 Verify that the deployment was successful.
 kubectl get deployment/nginx-scaleout
@@ -147,7 +147,7 @@ kubectl get deployment/nginx-scaleout
 
 Run the following command:
 
-_kubectl scale --replicas=10 deployment/nginx-scaleout
+*kubectl scale --replicas=10 deployment/nginx-scaleout*
 
 Check the autoscaler logs again.
 kubectl logs -f deployment/cluster-autoscaler -n kube-system

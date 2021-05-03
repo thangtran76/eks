@@ -155,18 +155,22 @@ Clone Git repository to your Bastion host:
 
     *kubectl apply -f ./nginx-svc.yaml*
 
-- Verify that the deployment was successful.
+- Verify that the service nginx-svc was created successful.
+
+    *kubectl get service*
+
+- Copy the <EXTERNAL-IP> of the LoadBalancer, then we'll use it for testing
+
+### 11. Test the service
+- Get the index page from the Load Balancer
+
+    *curl EXTERNAL-IP*
+
+- Verify that the output should be the HTML for a default Nginx web page.
 
     *kubectl get service*
     
-### 11. Create a service
-- Deploy the nginx deployment.
-
-    *kubectl apply -f ./nginx-svc.yaml*
-
-- Verify that the deployment was successful.
-
-    *kubectl get service*
+- Verify using a browser, navigate to the same IP, where we should then see the same Nginx web page
 
 ### 12. Scale the Nginx Deployment
 - View the ReplicaSets before scale
@@ -223,9 +227,7 @@ The control plane is abstracted — we can only interact with it using the comma
 
 
 
-curl "<LOAD_BALANCER_EXTERNAL_IP>"
-The output should be the HTML for a default Nginx web page.
-In a new browser tab, navigate to the same IP, where we should then see the same Nginx web page.
+
 Test the High Availability Features of Your EKS Cluster
 In the AWS console, on the EC2 instances page, select the three t3.micro instances.
 Click Actions > Instance State > Stop.

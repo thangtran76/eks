@@ -1,44 +1,11 @@
-# Amazon EKS
+# Amazon EKS Lab
 
 ## Introduction
 Elastic Kubernetes Service (EKS) is a fully managed Kubernetes service from AWS. In this lab, you will work with the AWS command line interface and console, using command line utilities like eksctl and kubectl to launch an EKS cluster, provision a Kubernetes deployment and pod running instances of nginx, and create a LoadBalancer service to expose your application over the internet.
 
 ## Preparation for Bastion host
-Course files can be found here: https://github.com/ACloudGuru-Resources/Course_EKS-Basics
-Solution
-Log in to the live AWS environment using the credentials provided. Make sure you're in the N. Virginia (us-east-1) region throughout the lab.
-Create an IAM User with Admin Permissions
-Navigate to IAM > Users.
-Click Add user.
-Set the following values:
-User name: k8-admin
-Access type: Programmatic access
-Click Next: Permissions.
-Select Attach existing policies directly.
-Select AdministratorAccess.
-Click Next: Tags > Next: Review.
-Click Create user.
-Copy the access key ID and secret access key, and paste them into a text file, as we'll need them in the next step.
-Launch an EC2 Instance and Configure the Command Line Tools
-Navigate to EC2 > Instances.
-Click Launch Instance.
-On the AMI page, select the Amazon Linux 2 AMI.
-Leave t2.micro selected, and click Next: Configure Instance Details.
-On the Configure Instance Details page:
-Network: Leave default
-Subnet: Leave default
-Auto-assign Public IP: Enable
-Click Next: Add Storage > Next: Add Tags > Next: Configure Security Group.
-Click Review and Launch, and then Launch.
-In the key pair dialog, select Create a new key pair.
-Give it a Key pair name of "mynvkp".
-Click Download Key Pair, and then Launch Instances.
-Click View Instances, and give it a few minutes to enter the running state.
-Once the instance is fully created, check the checkbox next to it and click Connect at the top of the window.
-In the Connect to your instance dialog, select EC2 Instance Connect (browser-based SSH connection).
-Click Connect.
 
-### 1. Update AWS CLI
+### Update AWS CLI
 In the command line window, check the AWS CLI version:
 aws --version
 It should be an older version.
@@ -56,110 +23,188 @@ aws --version
 It should now be updated.
 Configure the CLI:
 
+### Configure AWS CLI using your AWS Access Key ID and AWS Secret Access Key
+*aws configure*
 
-aws configure
 For AWS Access Key ID, paste in the access key ID you copied earlier.
 For AWS Secret Access Key, paste in the secret access key you copied earlier.
 For Default region name, enter us-east-1.
 For Default output format, enter json.
 
 ### Install kubectl
-Download kubectl:
-curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.19.6/2021-01-05/bin/linux/amd64/kubectl
-Apply execute permissions to the binary:
-chmod +x ./kubectl
-Copy the binary to a directory in your path:
-mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
-Ensure kubectl is installed:
-kubectl version --short --client
+1. Download kubectl:
+
+    *curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.19.6/2021-01-05/bin/linux/amd64/kubectl*
+
+2. Apply execute permissions to the binary:
+
+    *chmod +x ./kubectl*
+
+3. Copy the binary to a directory in your path:
+
+    *mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin*
+
+4. Ensure kubectl is installed:
+
+    *kubectl version --short --client*
 
 ### Install eksctl
-Download eksctl:
-curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
-Move the extracted binary to /usr/bin:
-sudo mv /tmp/eksctl /usr/bin
-Get the version of eksctl:
-eksctl version
-See the options with eksctl:
-eksctl help
+1. Download eksctl:
 
-### Install git
-Install Git:
-sudo yum install -y git
+    *curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp*
+
+2. Move the extracted binary to /usr/bin:
+
+    *sudo mv /tmp/eksctl /usr/bin*
+
+3. Get the version of eksctl:
+
+    *eksctl version*
+
+4. See the options with eksctl:
+
+    *eksctl help*
+
+### Install Git
+*sudo yum install -y git*
 
 ## Amazon EKS
 
 ### 1. Provision an EKS Cluster
-Provision an EKS cluster with three worker nodes in us-east-1:
+- Provision an EKS cluster with three worker nodes in us-east-1:
 
-*eksctl create cluster --name dev --version 1.19 --region us-east-1 --nodegroup-name standard-workers --node-type t3.micro --nodes 3 --nodes-min 1 --nodes-max 4 --managed*
+    *eksctl create cluster --name dev --version 1.19 --region us-east-1 --nodegroup-name standard-workers --node-type t3.micro --nodes 2 --nodes-min 1 --nodes-max 4 --managed*
 
 It will take 10–15 minutes since it's provisioning the control plane and worker nodes, attaching the worker nodes to the control plane, and creating the VPC, security group, and Auto Scaling group.
 
-In the CLI, check the cluster:
-eksctl get cluster
+- Check for the created cluster:
 
-### 2. Enable it to connect to our cluster:
+    *eksctl get cluster*
+
+### 2. Enable AWS CLI to connect to our cluster:
 *aws eks update-kubeconfig --name dev --region us-east-1*
 
 ### 3. Enable CloudWatch logging for cluster "dev" in "us-east-1":
 *eksctl utils update-cluster-logging --enable-types=all --region=us-east-1 --cluster=dev --approve*
 
 ### 4. Update Autoscaling Group
-Modify the Min/Max Sizes of the Autoscaling Group
-In your browser, log in to the AWS Management Console with the credentials provided on the lab instructions page. Make sure you are using the us-east-1 (N. Virginia) region.
-Navigate to the EC2 service.
-Click Autoscaling Groups in the left sidebar.
-Select the autoscaling group that has already been created for you.
-Note the name of the autoscaling group (we'll need it later).
-Click Actions > Edit.
-In the Edit details menu, configure the following settings:
-Min: 2
-Max: 8
-Click Save.
+Follow these steps to modify the Min/Max Sizes of the Autoscaling Group
 
-### 5. Create Cluster Autoscaler deployment to deploy to kube-system
-Access the application using the load balancer, replacing <LOAD_BALANCER_EXTERNAL_IP> with the IP you copied earlier:
+* In your browser, log in to the AWS Management Console. Make sure you are using the same region us-east-1.
 
-### 6. Deploy the Cluster Autoscaler
+* Navigate to the EC2 service.
 
-*kubectl apply -f cluster_autoscaler.yaml*
+* Click Autoscaling Groups in the left sidebar.
 
-Check the cluster autoscaler logs.
-kubectl logs -f deployment/cluster-autoscaler -n kube-system
-Press Ctrl + C to exit the logs.
+* Select the Autoscaling Group that has been created by in the step to Provision an EKS Cluster.
 
-### 7. Deploy the Nginx Deployment
+* Copy the Autoscaling Group name, we'll need it later.
 
-Deploy a Sample Nginx Application
-List the contents of the current directory.
-ls
-List the contents of the nginx.yaml file.
-cat nginx.yaml
-Deploy the nginx deployment.
+* Click Actions > Edit.
 
-*kubectl apply -f nginx.yaml*
+* In the Edit details menu, configure the following settings: Min: 2, Max: 4, click Save.
 
-Verify that the deployment was successful.
-kubectl get deployment/nginx-scaleout
+### 5. Clone Git repository
+Clone Git repository to your Bastion host:
+*git clone https://github.com/thangtran76/eks.git*
 
-### 8. Scale the Nginx Deployment
+### 6. Apply the autoscaling policies to Node Group role
+- Locate the Role name like: eksctl-dev-nodegroup-standard-wor-NodeInstanceRole-3S7V5OEVA63A
 
-Run the following command:
+- Apply the autoscaling policies from the file asg-policy.json
 
-*kubectl scale --replicas=10 deployment/nginx-scaleout*
+- Save and quit
 
-Check the autoscaler logs again.
-kubectl logs -f deployment/cluster-autoscaler -n kube-system
+### 7. Update Cluster Autoscaler deployment before deploying to the namespace kube-system
+- Open the file cluster_autoscaler.yaml using Vim
 
-### 9. Scale the Nginx Deployment
-Delete the service.
-kubectl delete -f nginx-svc.yaml
-Delete the nginx and cluster autoscaler deployments.
-kubectl delete -f cluster_autoscaler.yaml
-Delete the nginx deployments.
-kubectl delete -f nginx.yaml
+- Replace <AUTOSCALING_GROUP> with the Autoscaling Group name you copied earlier
 
+- Save and quit
+
+### 8. Deploy the Cluster Autoscaler
+- Deploy the Cluster Autoscaler
+
+    *kubectl apply -f ./cluster_autoscaler.yaml*
+
+- Check the cluster autoscaler logs
+
+    *kubectl logs -f deployment/cluster-autoscaler -n kube-system*
+
+- Press Ctrl + C to exit the logs.
+
+### 9. Deploy the Nginx Deployment
+- Deploy the nginx deployment.
+
+    *kubectl apply -f ./nginx.yaml*
+
+- Verify that the deployment was successful.
+
+    *kubectl get deployment/nginx-scaleout*
+
+- View the pods
+
+    *kubectl get pod*
+
+- View the nodes
+
+    *kubectl get node*
+
+### 10. Create a service
+- Deploy the nginx deployment.
+
+    *kubectl apply -f ./nginx-svc.yaml*
+
+- Verify that the deployment was successful.
+
+    *kubectl get service*
+    
+### 11. Create a service
+- Deploy the nginx deployment.
+
+    *kubectl apply -f ./nginx-svc.yaml*
+
+- Verify that the deployment was successful.
+
+    *kubectl get service*
+
+### 12. Scale the Nginx Deployment
+- View the ReplicaSets before scale
+
+    *kubectl get rs*
+
+- Run kubectl scale command:
+
+    *kubectl scale --replicas=10 deployment/nginx-scaleout*
+
+- Check the autoscaler logs again.
+
+    *kubectl logs -f deployment/cluster-autoscaler -n kube-system*
+
+- View the pods
+
+    *kubectl get pod*
+
+- View the ReplicaSets after scale
+
+    *kubectl get rs*
+
+## Clean up
+### Delete Kubernetes components
+- Delete the service
+
+    *kubectl delete -f nginx-svc.yaml*
+
+- Delete the cluster autoscaler deployments
+
+    *kubectl delete -f cluster_autoscaler.yaml*
+
+- Delete the nginx deployments
+
+    *kubectl delete -f nginx.yaml*
+
+### Delete AWS EKS cluster
+*eksctl delete cluster dev*
 
 
 ## Explore
@@ -175,35 +220,8 @@ Click dev in the breadcrumb navigation link at the top of the screen.
 Click the Networking tab, where we'll see the VPC, subnets, etc.
 Click the Logging tab, where we'll see the control plane logging info.
 The control plane is abstracted — we can only interact with it using the command line utilities or the console. It’s not an EC2 instance we can log into and start running Linux commands on.
-Navigate to EC2 > Instances, where you should see the instances have been launched.
-Close out of the existing CLI window, if you still have it open.
-Select the original t2.micro instance, and click Connect at the top of the window.
-In the Connect to your instance dialog, select EC2 Instance Connect (browser-based SSH connection).
-Click Connect.
-Create a Deployment on Your EKS Cluster
-Download the course files:
-git clone https://github.com/ACloudGuru-Resources/Course_EKS-Basics
-Change directory:
-cd Course_EKS-Basics
-Take a look at the deployment file:
-cat nginx-deployment.yaml
-Take a look at the service file:
-cat nginx-svc.yaml
-Create the service:
-kubectl apply -f ./nginx-svc.yaml
-Check its status:
-kubectl get service
-Copy the external IP of the load balancer, and paste it into a text file, as we'll need it in a minute.
-Create the deployment:
-kubectl apply -f ./nginx-deployment.yaml
-Check its status:
-kubectl get deployment
-View the pods:
-kubectl get pod
-View the ReplicaSets:
-kubectl get rs
-View the nodes:
-kubectl get node
+
+
 
 curl "<LOAD_BALANCER_EXTERNAL_IP>"
 The output should be the HTML for a default Nginx web page.
@@ -235,8 +253,6 @@ Access the application using the load balancer, replacing <LOAD_BALANCER_EXTERNA
 curl "<LOAD_BALANCER_EXTERNAL_IP>"
 We should see the Nginx web page HTML again. (If you don't, wait a few more minutes.)
 In a new browser tab, navigate to the same IP, where we should again see the Nginx web page.
-In the CLI, delete everything:
-eksctl delete cluster dev
 
 Copy the content of asg-policy.json to your clipboard.
 Switch to the AWS Management Console.

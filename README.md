@@ -5,67 +5,76 @@ Elastic Kubernetes Service (EKS) is a fully managed Kubernetes service from AWS.
 
 ## Preparation for Bastion host
 
-### Update AWS CLI
-In the command line window, check the AWS CLI version:
-aws --version
-It should be an older version.
-Download v2:
-curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-Unzip the file:
-unzip awscliv2.zip
-See where the current AWS CLI is installed:
-which aws
-It should be /usr/bin/aws.
-Update it:
-sudo ./aws/install --bin-dir /usr/bin --install-dir /usr/bin/aws-cli --update
-Check the version of AWS CLI:
-aws --version
-It should now be updated.
-Configure the CLI:
+### 1. Update AWS CLI
+- In the command line window, check the AWS CLI version:
 
-### Configure AWS CLI using your AWS Access Key ID and AWS Secret Access Key
+    *aws --version*
+It should be an older version.
+- Download v2:
+
+    *curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"*
+
+- Unzip the file:
+
+    *unzip awscliv2.zip*
+
+- See where the current AWS CLI is installed:
+
+    *which aws*
+
+It should be /usr/bin/aws.
+
+- Update AWS CLI to version 2
+
+    *sudo ./aws/install --bin-dir /usr/bin --install-dir /usr/bin/aws-cli --update*
+
+- Check the version of AWS CLI:
+
+    *aws --version*
+It should now be updated.
+
+
+### 2. Configure AWS CLI using your AWS Access Key ID and AWS Secret Access Key
 *aws configure*
 
-For AWS Access Key ID, paste in the access key ID you copied earlier.
-For AWS Secret Access Key, paste in the secret access key you copied earlier.
 For Default region name, enter us-east-1.
 For Default output format, enter json.
 
-### Install kubectl
-1. Download kubectl:
+### 3. Install kubectl
+- Download kubectl:
 
     *curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.19.6/2021-01-05/bin/linux/amd64/kubectl*
 
-2. Apply execute permissions to the binary:
+- Apply execute permissions to the binary:
 
     *chmod +x ./kubectl*
 
-3. Copy the binary to a directory in your path:
+- Copy the binary to a directory in your path:
 
     *mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin*
 
-4. Ensure kubectl is installed:
+- Ensure kubectl is installed:
 
     *kubectl version --short --client*
 
-### Install eksctl
-1. Download eksctl:
+### 4. Install eksctl
+- Download eksctl:
 
     *curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp*
 
-2. Move the extracted binary to /usr/bin:
+- Move the extracted binary to /usr/bin:
 
     *sudo mv /tmp/eksctl /usr/bin*
 
-3. Get the version of eksctl:
+- Get the version of eksctl:
 
     *eksctl version*
 
-4. See the options with eksctl:
+- See the options with eksctl:
 
     *eksctl help*
 
-### Install Git
+### 5. Install Git
 *sudo yum install -y git*
 
 ## Amazon EKS
@@ -225,9 +234,6 @@ Click the Networking tab, where we'll see the VPC, subnets, etc.
 Click the Logging tab, where we'll see the control plane logging info.
 The control plane is abstracted — we can only interact with it using the command line utilities or the console. It’s not an EC2 instance we can log into and start running Linux commands on.
 
-
-
-
 Test the High Availability Features of Your EKS Cluster
 In the AWS console, on the EC2 instances page, select the three t3.micro instances.
 Click Actions > Instance State > Stop.
@@ -255,19 +261,6 @@ Access the application using the load balancer, replacing <LOAD_BALANCER_EXTERNA
 curl "<LOAD_BALANCER_EXTERNAL_IP>"
 We should see the Nginx web page HTML again. (If you don't, wait a few more minutes.)
 In a new browser tab, navigate to the same IP, where we should again see the Nginx web page.
-
-Copy the content of asg-policy.json to your clipboard.
-Switch to the AWS Management Console.
-Navigate to the IAM service.
-Click Roles in the left sidebar.
-Type "node" in the search bar.
-Click the name of the role that appears in the search results to open it.
-Click + Add inline policy.
-Click the JSON tab.
-Delete the default text from the policy editor, and paste in the content of asg-policy.json you copied to your clipboard earlier.
-Click Review policy.
-Name the policy "CA".
-Click Create policy.
 
 ## Monitoring
 

@@ -109,9 +109,9 @@ Clone Git repository to your Bastion host:
 *git clone https://github.com/thangtran76/eks.git*
 
 ### 6. Apply the autoscaling policies to Node Group role
-- Open the file cluster_autoscaler.yaml using Vim
+- Locate the Role name like: eksctl-dev-nodegroup-standard-wor-NodeInstanceRole-3S7V5OEVA63A
 
-- Replace <AUTOSCALING_GROUP> with the Autoscaling Group name you copied earlier
+- Apply the autoscaling policies from the file asg-policy.json
 
 - Save and quit
 
@@ -123,43 +123,52 @@ Clone Git repository to your Bastion host:
 - Save and quit
 
 ### 8. Deploy the Cluster Autoscaler
-1.  Deploy the Cluster Autoscaler
+- Deploy the Cluster Autoscaler
 
     *kubectl apply -f ./cluster_autoscaler.yaml*
 
-2. Check the cluster autoscaler logs
+- Check the cluster autoscaler logs
 
     *kubectl logs -f deployment/cluster-autoscaler -n kube-system*
 
-3. Press Ctrl + C to exit the logs.
+- Press Ctrl + C to exit the logs.
 
 ### 9. Deploy the Nginx Deployment
-1. Deploy the nginx deployment.
+- Deploy the nginx deployment.
 
     *kubectl apply -f ./nginx.yaml*
 
-2. Verify that the deployment was successful.
+- Verify that the deployment was successful.
 
     *kubectl get deployment/nginx-scaleout*
 
-3. View the pods
+- View the pods
 
     *kubectl get pod*
 
-4. View the nodes
+- View the nodes
 
     *kubectl get node*
 
 ### 10. Create a service
-1. Deploy the nginx deployment.
+- Deploy the nginx deployment.
 
     *kubectl apply -f ./nginx-svc.yaml*
 
-2. Verify that the deployment was successful.
+- Verify that the deployment was successful.
+
+    *kubectl get service*
+    
+### 11. Create a service
+- Deploy the nginx deployment.
+
+    *kubectl apply -f ./nginx-svc.yaml*
+
+- Verify that the deployment was successful.
 
     *kubectl get service*
 
-### 11. Scale the Nginx Deployment
+### 12. Scale the Nginx Deployment
 - View the ReplicaSets before scale
 
     *kubectl get rs*
@@ -172,17 +181,25 @@ Clone Git repository to your Bastion host:
 
     *kubectl logs -f deployment/cluster-autoscaler -n kube-system*
 
+- View the pods
+
+    *kubectl get pod*
+
+- View the ReplicaSets after scale
+
+    *kubectl get rs*
+
 ## Clean up
 ### Delete Kubernetes components
-1. Delete the service
+- Delete the service
 
     *kubectl delete -f nginx-svc.yaml*
 
-2. Delete the cluster autoscaler deployments
+- Delete the cluster autoscaler deployments
 
     *kubectl delete -f cluster_autoscaler.yaml*
 
-3. Delete the nginx deployments
+- Delete the nginx deployments
 
     *kubectl delete -f nginx.yaml*
 
@@ -236,8 +253,6 @@ Access the application using the load balancer, replacing <LOAD_BALANCER_EXTERNA
 curl "<LOAD_BALANCER_EXTERNAL_IP>"
 We should see the Nginx web page HTML again. (If you don't, wait a few more minutes.)
 In a new browser tab, navigate to the same IP, where we should again see the Nginx web page.
-In the CLI, delete everything:
-eksctl delete cluster dev
 
 Copy the content of asg-policy.json to your clipboard.
 Switch to the AWS Management Console.

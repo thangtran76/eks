@@ -70,49 +70,59 @@ For Default output format, enter json.
 
 ## Amazon EKS
 
-### Provision an EKS Cluster
-1. Provision an EKS cluster with three worker nodes in us-east-1:
+### 1. Provision an EKS Cluster
+- Provision an EKS cluster with three worker nodes in us-east-1:
 
     *eksctl create cluster --name dev --version 1.19 --region us-east-1 --nodegroup-name standard-workers --node-type t3.micro --nodes 2 --nodes-min 1 --nodes-max 4 --managed*
 
 It will take 10–15 minutes since it's provisioning the control plane and worker nodes, attaching the worker nodes to the control plane, and creating the VPC, security group, and Auto Scaling group.
 
-2. Check for the created cluster:
+- Check for the created cluster:
 
     *eksctl get cluster*
 
-### Enable AWS CLI to connect to our cluster:
+### 2. Enable AWS CLI to connect to our cluster:
 *aws eks update-kubeconfig --name dev --region us-east-1*
 
-### Enable CloudWatch logging for cluster "dev" in "us-east-1":
+### 3. Enable CloudWatch logging for cluster "dev" in "us-east-1":
 *eksctl utils update-cluster-logging --enable-types=all --region=us-east-1 --cluster=dev --approve*
 
-### Update Autoscaling Group
+### 4. Update Autoscaling Group
 Follow these steps to modify the Min/Max Sizes of the Autoscaling Group
 
-1. In your browser, log in to the AWS Management Console with the credentials provided on the lab instructions page. Make sure you are using the us-east-1 (N. Virginia) region.
-2. Navigate to the EC2 service.
-3. Click Autoscaling Groups in the left sidebar.
-4. Select the Autoscaling Group that has been created by in the step to Provision an EKS Cluster.
-5. Copy the Autoscaling Group name, we'll need it later.
-6. Click Actions > Edit.
-7. In the Edit details menu, configure the following settings: Min: 2, Max: 4, click Save.
+* In your browser, log in to the AWS Management Console. Make sure you are using the same region us-east-1.
 
-### Clone Git repository
+* Navigate to the EC2 service.
+
+* Click Autoscaling Groups in the left sidebar.
+
+* Select the Autoscaling Group that has been created by in the step to Provision an EKS Cluster.
+
+* Copy the Autoscaling Group name, we'll need it later.
+
+* Click Actions > Edit.
+
+* In the Edit details menu, configure the following settings: Min: 2, Max: 4, click Save.
+
+### 5. Clone Git repository
 Clone Git repository to your Bastion host:
 *git clone https://github.com/thangtran76/eks.git*
 
-### Apply the autoscaling policies to Node Group role
-1. Open the file cluster_autoscaler.yaml using Vim
-2. Replace <AUTOSCALING_GROUP> with the Autoscaling Group name you copied earlier
-3. Save and quit
+### 6. Apply the autoscaling policies to Node Group role
+- Open the file cluster_autoscaler.yaml using Vim
 
-### Update Cluster Autoscaler deployment before deploying to the namespace kube-system
-1. Open the file cluster_autoscaler.yaml using Vim
-2. Replace <AUTOSCALING_GROUP> with the Autoscaling Group name you copied earlier
-3. Save and quit
+- Replace <AUTOSCALING_GROUP> with the Autoscaling Group name you copied earlier
 
-### Deploy the Cluster Autoscaler
+- Save and quit
+
+### 7. Update Cluster Autoscaler deployment before deploying to the namespace kube-system
+- Open the file cluster_autoscaler.yaml using Vim
+
+- Replace <AUTOSCALING_GROUP> with the Autoscaling Group name you copied earlier
+
+- Save and quit
+
+### 8. Deploy the Cluster Autoscaler
 1.  Deploy the Cluster Autoscaler
 
     *kubectl apply -f ./cluster_autoscaler.yaml*
@@ -123,7 +133,7 @@ Clone Git repository to your Bastion host:
 
 3. Press Ctrl + C to exit the logs.
 
-### Deploy the Nginx Deployment
+### 9. Deploy the Nginx Deployment
 1. Deploy the nginx deployment.
 
     *kubectl apply -f ./nginx.yaml*
@@ -140,7 +150,7 @@ Clone Git repository to your Bastion host:
 
     *kubectl get node*
 
-### Create a service
+### 10. Create a service
 1. Deploy the nginx deployment.
 
     *kubectl apply -f ./nginx-svc.yaml*
@@ -149,16 +159,16 @@ Clone Git repository to your Bastion host:
 
     *kubectl get service*
 
-### Scale the Nginx Deployment
-1. View the ReplicaSets before scale
+### 11. Scale the Nginx Deployment
+- View the ReplicaSets before scale
 
     *kubectl get rs*
 
-2. Run kubectl scale command:
+- Run kubectl scale command:
 
     *kubectl scale --replicas=10 deployment/nginx-scaleout*
 
-3. Check the autoscaler logs again.
+- Check the autoscaler logs again.
 
     *kubectl logs -f deployment/cluster-autoscaler -n kube-system*
 

@@ -73,7 +73,7 @@ For Default output format, enter json.
 ### Provision an EKS Cluster
 1. Provision an EKS cluster with three worker nodes in us-east-1:
 
-    *eksctl create cluster --name dev --version 1.19 --region us-east-1 --nodegroup-name standard-workers --node-type t3.micro --nodes 3 --nodes-min 1 --nodes-max 4 --managed*
+    *eksctl create cluster --name dev --version 1.19 --region us-east-1 --nodegroup-name standard-workers --node-type t3.micro --nodes 2 --nodes-min 1 --nodes-max 4 --managed*
 
 It will take 10–15 minutes since it's provisioning the control plane and worker nodes, attaching the worker nodes to the control plane, and creating the VPC, security group, and Auto Scaling group.
 
@@ -100,7 +100,12 @@ Follow these steps to modify the Min/Max Sizes of the Autoscaling Group
 
 ### Clone Git repository
 Clone Git repository to your Bastion host:
-*git clone https://github.com/thangtran76/aws-eks.git*
+*git clone https://github.com/thangtran76/eks.git*
+
+### Apply the autoscaling policies to Node Group role
+1. Open the file cluster_autoscaler.yaml using Vim
+2. Replace <AUTOSCALING_GROUP> with the Autoscaling Group name you copied earlier
+3. Save and quit
 
 ### Update Cluster Autoscaler deployment before deploying to the namespace kube-system
 1. Open the file cluster_autoscaler.yaml using Vim

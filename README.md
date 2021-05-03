@@ -111,12 +111,12 @@ Clone Git repository to your Bastion host:
 ### 6. Apply the autoscaling policies to Node Group role
 - Locate the Role name like: eksctl-dev-nodegroup-standard-wor-NodeInstanceRole-3S7V5OEVA63A
 
-- Apply the autoscaling policies from the file asg-policy.json
-
-- Save and quit
+- Create a new inline policy with autoscaling permissions from the file asg-policy.json
 
 ### 7. Update Cluster Autoscaler deployment before deploying to the namespace kube-system
-- Open the file cluster_autoscaler.yaml using Vim
+- Open the file cluster_autoscaler.yaml
+
+    *vim cluster_autoscaler.yaml*
 
 - Replace <AUTOSCALING_GROUP> with the Autoscaling Group name you copied earlier
 

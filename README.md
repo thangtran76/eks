@@ -115,6 +115,7 @@ Follow these steps to modify the Min/Max Sizes of the Autoscaling Group
 
 ### 5. Clone Git repository
 Clone Git repository to your Bastion host:
+
 *git clone https://github.com/thangtran76/eks.git*
 
 ### 6. Apply the autoscaling policies to Node Group role
@@ -177,8 +178,6 @@ Clone Git repository to your Bastion host:
 
 - Verify that the output should be the HTML for a default Nginx web page.
 
-    *kubectl get service*
-    
 - Verify using a browser, navigate to the same IP, where we should then see the same Nginx web page
 
 ### 12. Scale the Nginx Deployment
